@@ -6,6 +6,8 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AuctionComponent } from './auction/auction.component';
 
+import { EthereumProviderService } from './services/ethereum-provider.service';
+
 const routes = [
     { path: 'auction', component: AuctionComponent },
 ]
@@ -19,7 +21,7 @@ const routes = [
         BrowserModule,
         RouterModule.forRoot(routes)
     ],
-    providers: [],
+    providers: [EthereumProviderService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
