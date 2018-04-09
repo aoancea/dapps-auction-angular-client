@@ -7,15 +7,18 @@ import { AppComponent } from './app.component';
 import { AuctionComponent } from './auction/auction.component';
 
 import { EthereumProviderService } from './services/ethereum-provider.service';
+import { JsAuctionComponent } from './js-auction/js-auction.component';
 
 const routes = [
     { path: 'auction', component: AuctionComponent },
+    { path: 'js-auction', component: JsAuctionComponent },
 ]
 
 @NgModule({
     declarations: [
         AppComponent,
-        AuctionComponent
+        AuctionComponent,
+        JsAuctionComponent
     ],
     imports: [
         BrowserModule,
