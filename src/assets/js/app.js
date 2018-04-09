@@ -1,18 +1,9 @@
 (function () {
 
     var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+    var accounts = web3.eth.accounts;
 
-    //var eth = new Eth(TestRPC.provider());
-    var eth = web3.eth;
     var el = function (id) { return document.querySelector(id); };
-    /*
-    // uncomment to enable MetaMask support:
-    if (typeof window.web3 !== 'undefined' && typeof window.web3.currentProvider !== 'undefined') {
-        eth.setProvider(window.web3.currentProvider);
-    } else {
-        eth.setProvider(provider); // set to TestRPC if not available
-    }
-    */
 
     var biddingTime = 30; // 15 thousand seconds
 
@@ -20,9 +11,7 @@
     var SimpleAuctionABI = [{ "constant": false, "inputs": [], "name": "bid", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function" }, { "constant": false, "inputs": [], "name": "auctionEnd", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "beneficiary", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [], "name": "withdraw", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "auctionStart", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "highestBidder", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "biddingTime", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "highestBid", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [{ "name": "_biddingTime", "type": "uint256" }, { "name": "_beneficiary", "type": "address" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "bidder", "type": "address" }, { "indexed": false, "name": "amount", "type": "uint256" }], "name": "HighestBidIncreased", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "winner", "type": "address" }, { "indexed": false, "name": "amount", "type": "uint256" }], "name": "AuctionEnded", "type": "event" }];
     var SimpleAuctionContract = web3.eth.contract(SimpleAuctionABI);
 
-    var deployedContract = SimpleAuctionContract.new(biddingTime, web3.eth.accounts[0], { data: SimpleAuctionBytecode, from: web3.eth.accounts[0], gas: 3000000 }, function (err, myContract) {
-        //console.log(myContract.address);
-    });
+    var deployedContract = SimpleAuctionContract.new(biddingTime, accounts[0], { data: SimpleAuctionBytecode, from: accounts[0], gas: 3000000 });
 
     var angularLoadDelay = setTimeout(() => {
 
@@ -33,12 +22,8 @@
 
         clearInterval(angularLoadDelay);
 
-        var selectInput = el('#bidAccount');
-
-        var accounts = eth.accounts;
-
         accounts.forEach(function (address) {
-            selectInput.innerHTML += '<option value="' + address + '">'
+            el('#bidAccount').innerHTML += '<option value="' + address + '">'
                 + address + '</option>';
         });
 
@@ -75,8 +60,8 @@
         var auctionInterval = setInterval(function updateAuctionHTML() {
             if (!simpleAuctionInstance) { return; }
 
-            el('#accountBalance').innerHTML = web3.fromWei(eth.getBalance(accounts[0]), 'ether');
-            el('#raised').innerHTML = web3.fromWei(eth.getBalance(simpleAuctionInstance.address), 'ether');
+            el('#accountBalance').innerHTML = web3.fromWei(web3.eth.getBalance(accounts[0]), 'ether');
+            el('#raised').innerHTML = web3.fromWei(web3.eth.getBalance(simpleAuctionInstance.address), 'ether');
             el('#beneficiary').innerHTML = simpleAuctionInstance.beneficiary()[0].substr(0, 12);
             el('#highestBidder').innerHTML = simpleAuctionInstance.highestBidder().substr(0, 12);
             el('#highestBid').innerHTML = web3.fromWei(simpleAuctionInstance.highestBid(), 'ether');
