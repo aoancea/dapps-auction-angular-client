@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { EthereumProviderService } from './services/ethereum-provider.service';
 import { Web3ProviderService } from './services/web3-provider.service';
@@ -23,7 +24,8 @@ const routes = [
     ],
     imports: [
         BrowserModule,
-        RouterModule.forRoot(routes)
+        RouterModule.forRoot(routes),
+        FormsModule
     ],
     providers: [EthereumProviderService, Web3ProviderService],
     bootstrap: [AppComponent]

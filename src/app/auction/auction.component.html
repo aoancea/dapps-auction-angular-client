@@ -24,7 +24,7 @@
         <label>Timeleft</label>
         <blockquote>
             <p>
-                <em id="timeleft">{{timeleft}}</em>
+                <em id="timeleft">{{time_left}}</em>
                 <br />seconds
             </p>
         </blockquote>
@@ -69,21 +69,23 @@
 <div class="row">
     <div class="column column-33">
         <label>From Account</label>
-        <select id="bidAccount"></select>
+        <select id="bidAccount">
+            <option *ngFor="let account of accounts" [value]="account">{{account}}</option>
+        </select>
     </div>
     <div class="column column-25">
         <label>Bid Amount</label>
-        <input type="number" id="bidAmount" placeholder="28300 ether">
+        <input type="number" id="bidAmount" placeholder="28300 ether" [(ngModel)]="bid_amount"/>
     </div>
     <div class="column column-25">
         <label>
             <br />
         </label>
-        <button id="makeBid">Bid</button>
+        <button id="makeBid" [disabled]='time_left <= 0' (click)="bid()">Bid</button>
     </div>
 </div>
 <hr />
-<button id="endAuction" disabled="disabled">End Auction</button>
+<button id="endAuction" [disabled]='time_left > 0'>End Auction</button>
 <br />
 <br />
 <div id="response"></div>
