@@ -8,11 +8,11 @@ declare var Web3: any;
 @Injectable()
 export class EthereumProviderService {
 
-    EthInstance: any;
+    Eth: any;
 
-    Web3: any;
+    private Web3: any;
 
     constructor() {
-        this.EthInstance = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        this.Eth = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
      }
 }
