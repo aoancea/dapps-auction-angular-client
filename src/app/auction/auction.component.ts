@@ -53,11 +53,12 @@ export class AuctionComponent implements OnInit {
             this.simpleAuctionInstance = SimpleAuctionContract.at(this.deployedContract.address);
 
             this.accounts = this.web3.eth.accounts;
+            this.web3.eth.defaultAccount = this.accounts[0];
 
             var auctionInterval = setInterval(() => {
                 this.account_balance = this.web3.fromWei(this.web3.eth.getBalance(this.accounts[0]), 'ether');
                 this.raised = this.web3.fromWei(this.web3.eth.getBalance(this.simpleAuctionInstance.address), 'ether');
-                this.beneficiary = this.simpleAuctionInstance.beneficiary()[0].substr(0, 12);
+                this.beneficiary = this.simpleAuctionInstance.beneficiary().substr(0, 12);
                 this.highest_bidder = this.simpleAuctionInstance.highestBidder().substr(0, 12);
                 this.highest_bid = this.web3.fromWei(this.simpleAuctionInstance.highestBid(), 'ether');
 
@@ -86,11 +87,27 @@ export class AuctionComponent implements OnInit {
 
         this.response = 'Placing bid...';
 
+        var self = this;
+
         this.simpleAuctionInstance.bid(bidTxObject, function (bidError, bidResult) {
             if (bidError) {
-                this.response = 'Hmm, there was an error' + String(bidError);
+                self.response = 'Hmm, there was an error' + String(bidError);
             } else {
-                this.response = 'Making bid with tx hash: ' + String(bidResult);
+                self.response = 'Making bid with tx hash: ' + String(bidResult);
+            }
+        });
+    }
+
+    endAuction(): void {
+        this.response = 'Ending auction...';
+
+        var self = this;
+
+        this.simpleAuctionInstance.auctionEnd(function (endError, endResult) {
+            if (endError) {
+                self.response = 'Hmm, there was an error' + String(endError);
+            } else {
+                self.response = 'Ending auction with tx hash: ' + String(endResult);
             }
         });
     }
