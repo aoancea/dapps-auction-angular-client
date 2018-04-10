@@ -26,6 +26,11 @@ export class AuctionComponent implements OnInit {
     private accounts: string[];
 
     private bid_amount: number;
+    private bid_account: string;
+
+    private response: string;
+
+    private simpleAuctionInstance: any;
 
     constructor(private web3Provider: Web3ProviderService) {
         this.web3 = this.web3Provider.web3;
@@ -45,19 +50,19 @@ export class AuctionComponent implements OnInit {
 
             clearInterval(addressPromiseHandle);
 
-            var simpleAuctionInstance = SimpleAuctionContract.at(this.deployedContract.address);
+            this.simpleAuctionInstance = SimpleAuctionContract.at(this.deployedContract.address);
 
             this.accounts = this.web3.eth.accounts;
 
             var auctionInterval = setInterval(() => {
                 this.account_balance = this.web3.fromWei(this.web3.eth.getBalance(this.accounts[0]), 'ether');
-                this.raised = this.web3.fromWei(this.web3.eth.getBalance(simpleAuctionInstance.address), 'ether');
-                this.beneficiary = simpleAuctionInstance.beneficiary()[0].substr(0, 12);
-                this.highest_bidder = simpleAuctionInstance.highestBidder().substr(0, 12);
-                this.highest_bid = this.web3.fromWei(simpleAuctionInstance.highestBid(), 'ether');
+                this.raised = this.web3.fromWei(this.web3.eth.getBalance(this.simpleAuctionInstance.address), 'ether');
+                this.beneficiary = this.simpleAuctionInstance.beneficiary()[0].substr(0, 12);
+                this.highest_bidder = this.simpleAuctionInstance.highestBidder().substr(0, 12);
+                this.highest_bid = this.web3.fromWei(this.simpleAuctionInstance.highestBid(), 'ether');
 
-                var auctionStart = simpleAuctionInstance.auctionStart();
-                var auctionBiddingTime = simpleAuctionInstance.biddingTime();
+                var auctionStart = this.simpleAuctionInstance.auctionStart();
+                var auctionBiddingTime = this.simpleAuctionInstance.biddingTime();
 
                 var endTime = auctionStart.c[0] + bidding_time;
                 var actualTime = (new this.web3.BigNumber((new Date()).getTime() / 1000)).c[0];
@@ -74,8 +79,19 @@ export class AuctionComponent implements OnInit {
     }
 
     bid(): void {
+        var bidTxObject = {
+            from: this.bid_account,
+            value: this.web3.toWei(this.bid_amount, 'ether'),
+        };
 
+        this.response = 'Placing bid...';
+
+        this.simpleAuctionInstance.bid(bidTxObject, function (bidError, bidResult) {
+            if (bidError) {
+                this.response = 'Hmm, there was an error' + String(bidError);
+            } else {
+                this.response = 'Making bid with tx hash: ' + String(bidResult);
+            }
+        });
     }
-
-
 }
